@@ -7,7 +7,6 @@ public class Configuracao {
     private Integer usuarioId;
     private Bot bot;
     private Canal canal;
-    private Double filtroValor;
     private String tipoAlerta;
     private Boolean ativo;
     private Timestamp ultimoDisparo;
@@ -15,12 +14,11 @@ public class Configuracao {
     public Configuracao() {
     }
 
-    public Configuracao(Integer id, Integer usuarioId, Bot bot, Canal canal, Double filtroValor, String tipoAlerta, Boolean ativo, Timestamp ultimoDisparo) {
+    public Configuracao(Integer id, Integer usuarioId, Bot bot, Canal canal, String tipoAlerta, Boolean ativo, Timestamp ultimoDisparo) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.bot = bot;
         this.canal = canal;
-        this.filtroValor = filtroValor;
         this.tipoAlerta = tipoAlerta;
         this.ativo = ativo;
         this.ultimoDisparo = ultimoDisparo;
@@ -80,13 +78,5 @@ public class Configuracao {
 
     public void setUltimoDisparo(Timestamp ultimoDisparo) {
         this.ultimoDisparo = ultimoDisparo;
-    }
-
-    public Double getFiltroValor() {
-        return filtroValor;
-    }
-
-    public void setFiltroValor(Double filtroValor) {
-        this.filtroValor = filtroValor;
     }
 }

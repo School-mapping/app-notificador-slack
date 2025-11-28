@@ -11,7 +11,7 @@ public class SlackService {
         MethodsClient methods = slack.methods(token);
 
         ChatPostMessageRequest request = ChatPostMessageRequest.builder()
-                .channel(canalId)
+                .channel("kauan")
                 .text(mensagem)
                 .build();
 

@@ -1,3 +1,4 @@
+import entity.Bot;
 import entity.Configuracao;
 import entity.Monitor;
 import entity.SlackService;
@@ -5,7 +6,6 @@ import jdbc.BancoRepositorio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -46,6 +46,9 @@ public class Main {
 
                             logger.info("[{}] Notificação enviada para config ID: {}", LocalDateTime.now(), config.getId());
                             repo.getJdbcTemplate().update("INSERT INTO TB_Logs(data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", LocalDateTime.now(), "INFO", "Notificação enviada para config ID: " + config.getId(), "SLACK");
+                        } else {
+                            logger.info("[{}] Nenhuma notificação enviada para config ID: {}", LocalDateTime.now(), config.getId());
+                            repo.getJdbcTemplate().update("INSERT INTO TB_Logs(data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", LocalDateTime.now(), "INFO", "Nenhuma notificação enviada para config ID: " + config.getId(), "SLACK");
                         }
                     } catch (Exception e) {
                         logger.error("[{}] ❌ Falha ao processar config: {} \n {}", LocalDateTime.now(), config.getId(), e.getMessage());

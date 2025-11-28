@@ -1,9 +1,6 @@
 package jdbc;
 
-import entity.Configuracao;
-import entity.Escola;
-import entity.Ideb;
-import entity.Verba;
+import entity.*;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -45,23 +42,52 @@ public class BancoRepositorio {
     }
 
     public List<Configuracao> buscarConfiguracoesAtivas() {
-       return getJdbcTemplate().query("SELECT * FROM TB_Notificacao_Config WHERE ativo = true", new BeanPropertyRowMapper<>());
+        String sql = "SELECT c.*, b.id as bot_id, b.nome as bot_nome, b.token as bot_token, " +
+                    "ch.id as canal_id, ch.nome as canal_nome " +
+                    "FROM TB_Notificacao_Config c " +
+                    "LEFT JOIN TB_Bot_Slack b ON c.id_bot = b.id " +
+                    "LEFT JOIN TB_Canal_Slack ch ON c.id_canal = ch.id " +
+                    "WHERE c.ativo = true";
+        
+        return getJdbcTemplate().query(sql, (rs, rowNum) -> {
+            Configuracao config = new Configuracao();
+            config.setId(rs.getInt("id"));
+            config.setUsuarioId(rs.getInt("id_usuario"));
+            config.setTipoAlerta(rs.getString("tipo_alerta"));
+            config.setAtivo(rs.getBoolean("ativo"));
+            config.setUltimoDisparo(rs.getTimestamp("ultimo_disparo"));
+            
+            // Set Bot
+            Bot bot = new Bot();
+            bot.setId(rs.getInt("bot_id"));
+            bot.setNome(rs.getString("bot_nome"));
+            bot.setToken(rs.getString("bot_token"));
+            config.setBot(bot);
+            
+            // Set Canal
+            Canal canal = new Canal();
+            canal.setId(rs.getInt("canal_id"));
+            canal.setNome(rs.getString("canal_nome"));
+            config.setCanal(canal);
+            
+            return config;
+        });
     }
 
     public Boolean existemNovasVerbas(Timestamp dataUltimoDisparo){
-        Integer verbas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Verbas WHERE data_processamento < ?", Integer.class, dataUltimoDisparo);
+        Integer verbas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Verbas WHERE data_processamento > ?", Integer.class, dataUltimoDisparo);
 
         return verbas > 0;
     }
 
     public Boolean existemNovasEscolas(Timestamp dataUltimoDisparo){
-        Integer escolas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Escolas WHERE data_processamento < ?", Integer.class, dataUltimoDisparo);
+        Integer escolas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Escolas WHERE data_processamento > ?", Integer.class, dataUltimoDisparo);
 
         return escolas > 0;
     }
 
     public Boolean existemNovasNotas(Timestamp dataUltimoDisparo){
-        Integer notas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Ideb WHERE data_processamento < ?", Integer.class,dataUltimoDisparo);
+        Integer notas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Ideb WHERE data_processamento > ?", Integer.class, dataUltimoDisparo);
 
         return notas > 0;
     }
