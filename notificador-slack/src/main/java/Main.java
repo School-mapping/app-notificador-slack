@@ -22,8 +22,13 @@ public class Main {
 
         Runnable tarefa = () -> {
             try {
-                System.out.println(" Buscando configurações de notificação ativas...");
+                logger.info("[{}] Buscando configurações de notificação ativas...", LocalDateTime.now());
                 List<Configuracao> configs = repo.buscarConfiguracoesAtivas();
+
+                if (configs.isEmpty()) {
+                    logger.info("[{}] Nenhuma configuração ativa encontrada.", LocalDateTime.now());
+                    return;
+                }
 
                 for (Configuracao config : configs) {
                     try {
@@ -39,11 +44,11 @@ public class Main {
                             // 4. Atualiza data do último disparo
                             repo.atualizarUltimoDisparo(config);
 
-                            logger.info("Notificação enviada para config ID: " + config.getId());
+                            logger.info("[{}] Notificação enviada para config ID: {}", LocalDateTime.now(), config.getId());
                             repo.getJdbcTemplate().update("INSERT INTO TB_Logs(data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", LocalDateTime.now(), "INFO", "Notificação enviada para config ID: " + config.getId(), "SLACK");
                         }
                     } catch (Exception e) {
-                        System.err.println("❌ Falha ao processar config " + config.getId() + ": " + e.getMessage());
+                        logger.error("[{}] ❌ Falha ao processar config: {} \n {}", LocalDateTime.now(), config.getId(), e.getMessage());
                         repo.getJdbcTemplate().update("INSERT INTO TB_Logs(data_hora, nivel, descricao, origem) VALUES (?, ?, ?, ?)", LocalDateTime.now(), "ERROR", "Falha ao processar config " + config.getId() + ": " + e.getMessage(), "SLACK");
                     }
                 }
