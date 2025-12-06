@@ -1,7 +1,4 @@
-import entity.Bot;
-import entity.Configuracao;
-import entity.Monitor;
-import entity.SlackService;
+import entity.*;
 import jdbc.BancoRepositorio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +12,9 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     public static void main(String[] args) {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        SlackService slackService = new SlackService();
         Monitor monitor = new Monitor();
         BancoRepositorio repo = new BancoRepositorio();
+        SlackService slackService = new SlackService(repo);
         Logger logger = LoggerFactory.getLogger(Main.class);
 
         Runnable tarefa = () -> {
@@ -32,16 +29,12 @@ public class Main {
 
                 for (Configuracao config : configs) {
                     try {
-                        // 1. Verifica se a regra de negócio aconteceu (Verba chegou? Ideb caiu?)
                         if (monitor.verificarCondicao(config)) {
 
-                            // 2. Gera o texto
                             String texto = monitor.gerarMensagem(config);
 
-                            // 3. Envia usando o token ESPECÍFICO daquela config
                             slackService.enviarMensagem(config.getBot().getToken(), config.getCanal().getNome(), texto);
 
-                            // 4. Atualiza data do último disparo
                             repo.atualizarUltimoDisparo(config);
 
                             logger.info("[{}] Notificação enviada para config ID: {}", LocalDateTime.now(), config.getId());
@@ -58,9 +51,33 @@ public class Main {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            try {
+                logger.info("[{}] Buscando chamados abertos...", LocalDateTime.now());
+                List<Chamado> chamados = repo.buscarChamadosAbertos();
+
+                if (chamados.isEmpty()){
+                    logger.info("[{}] Nenhum chamado aberto encontrado.", LocalDateTime.now());
+                    return;
+                }
+
+                for (Chamado chamado : chamados) {
+                    try {
+                        logger.info("[{}] Enviando mensagem de chamado aberto para o canal de suporte no Slack...", LocalDateTime.now());
+                        slackService.enviarMensagemSuporte(chamado);
+
+                        logger.info("[{}] Chamado aberto enviado para o Slack.", LocalDateTime.now());
+
+                        repo.atualizarChamado(chamado.getId());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         };
 
-        // Roda a cada 5 minutos
         scheduler.scheduleAtFixedRate(tarefa, 0, 5, TimeUnit.MINUTES);
     }
 }

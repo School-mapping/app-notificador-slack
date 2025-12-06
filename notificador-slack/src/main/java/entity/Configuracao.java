@@ -1,6 +1,7 @@
 package entity;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class Configuracao {
     private Integer id;
@@ -9,12 +10,12 @@ public class Configuracao {
     private Canal canal;
     private String tipoAlerta;
     private Boolean ativo;
-    private Timestamp ultimoDisparo;
+    private LocalDateTime ultimoDisparo;
 
     public Configuracao() {
     }
 
-    public Configuracao(Integer id, Integer usuarioId, Bot bot, Canal canal, String tipoAlerta, Boolean ativo, Timestamp ultimoDisparo) {
+    public Configuracao(Integer id, Integer usuarioId, Bot bot, Canal canal, String tipoAlerta, Boolean ativo, LocalDateTime ultimoDisparo) {
         this.id = id;
         this.usuarioId = usuarioId;
         this.bot = bot;
@@ -72,11 +73,11 @@ public class Configuracao {
         this.ativo = ativo;
     }
 
-    public Timestamp getUltimoDisparo() {
+    public LocalDateTime getUltimoDisparo() {
         return ultimoDisparo;
     }
 
-    public void setUltimoDisparo(Timestamp ultimoDisparo) {
+    public void setUltimoDisparo(LocalDateTime ultimoDisparo) {
         this.ultimoDisparo = ultimoDisparo;
     }
 }

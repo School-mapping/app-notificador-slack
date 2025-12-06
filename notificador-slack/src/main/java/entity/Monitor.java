@@ -3,6 +3,7 @@ package entity;
 import jdbc.BancoRepositorio;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class Monitor {
     private BancoRepositorio banco = new BancoRepositorio();
@@ -10,11 +11,11 @@ public class Monitor {
     public Boolean verificarCondicao(Configuracao config){
 
         if ("NOVAS_VERBAS".equalsIgnoreCase(config.getTipoAlerta())){
-            return banco.existemNovasVerbas(config.getUltimoDisparo() == null ? new Timestamp(System.currentTimeMillis()) : config.getUltimoDisparo());
+            return banco.existemNovasVerbas(config.getUltimoDisparo() == null ? LocalDateTime.now() : config.getUltimoDisparo());
         } else if ("NOVAS_ESCOLAS".equalsIgnoreCase(config.getTipoAlerta())) {
-            return banco.existemNovasEscolas(config.getUltimoDisparo() == null ? new Timestamp(System.currentTimeMillis()) : config.getUltimoDisparo());
+            return banco.existemNovasEscolas(config.getUltimoDisparo() == null ? LocalDateTime.now() : config.getUltimoDisparo());
         } else if ("NOVAS_NOTAS".equalsIgnoreCase(config.getTipoAlerta())) {
-            return banco.existemNovasNotas(config.getUltimoDisparo() == null ? new Timestamp(System.currentTimeMillis()) : config.getUltimoDisparo());
+            return banco.existemNovasNotas(config.getUltimoDisparo() == null ? LocalDateTime.now() : config.getUltimoDisparo());
         }
 
         return false;
