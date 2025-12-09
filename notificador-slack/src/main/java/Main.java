@@ -78,6 +78,6 @@ public class Main {
             }
         };
 
-        scheduler.scheduleAtFixedRate(tarefa, 0, 5, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(tarefa, 0, 1, TimeUnit.MINUTES);
     }
 }
