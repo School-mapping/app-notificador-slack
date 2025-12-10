@@ -88,19 +88,19 @@ public class BancoRepositorio {
     }
 
     public Boolean existemNovasVerbas(LocalDateTime dataUltimoDisparo){
-        Integer verbas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Verbas WHERE data_processamento > ?", Integer.class, dataUltimoDisparo);
+        Integer verbas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Verbas WHERE data_processamento < ?", Integer.class, dataUltimoDisparo);
 
         return verbas > 0;
     }
 
     public Boolean existemNovasEscolas(LocalDateTime dataUltimoDisparo){
-        Integer escolas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Escolas WHERE data_processamento > ?", Integer.class, dataUltimoDisparo);
+        Integer escolas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Escolas WHERE data_processamento < ?", Integer.class, dataUltimoDisparo);
 
         return escolas > 0;
     }
 
     public Boolean existemNovasNotas(LocalDateTime dataUltimoDisparo){
-        Integer notas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Ideb WHERE data_processamento > ?", Integer.class, dataUltimoDisparo);
+        Integer notas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Ideb WHERE data_processamento < ?", Integer.class, dataUltimoDisparo);
 
         return notas > 0;
     }
