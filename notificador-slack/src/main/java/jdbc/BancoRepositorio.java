@@ -13,14 +13,13 @@ import java.util.List;
 
 public class BancoRepositorio {
 
-//    private static final String URL = System.getenv("DB_URL");
-//    private static final String USER = System.getenv("DB_USER");
-//    private static final String PASSWORD = System.getenv("DB_PASSWORD");
+    private static final String URL = System.getenv("DB_URL");
+    private static final String USER = System.getenv("DB_USER");
+    private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
-    private static final String URL = "jdbc:mysql://localhost:3306/SchoolMapping?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
-    private static final String USER = "root";
-    private static final String PASSWORD = "admin";
-
+    // private static final String URL = "jdbc:mysql://localhost:3306/SchoolMapping?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+    // private static final String USER = "root";
+    // private static final String PASSWORD = "admin";
 
 
     private final DataSource dataSource;
@@ -34,10 +33,6 @@ public class BancoRepositorio {
         basicDataSource.setUrl(URL);
         basicDataSource.setUsername(USER);
         basicDataSource.setPassword(PASSWORD);
-
-//        basicDataSource.setUrl(System.getenv("DB_URL"));
-//        basicDataSource.setUsername(System.getenv("DB_USER"));
-//        basicDataSource.setPassword(System.getenv("DB_PASSWORD"));
 
         this.dataSource = basicDataSource;
         this.jdbcTemplate = new JdbcTemplate(this.dataSource);
@@ -88,19 +83,19 @@ public class BancoRepositorio {
     }
 
     public Boolean existemNovasVerbas(LocalDateTime dataUltimoDisparo){
-        Integer verbas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Verbas WHERE data_processamento < ?", Integer.class, dataUltimoDisparo);
+        Integer verbas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Verbas WHERE data_processamento > ?", Integer.class, dataUltimoDisparo);
 
         return verbas > 0;
     }
 
     public Boolean existemNovasEscolas(LocalDateTime dataUltimoDisparo){
-        Integer escolas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Escolas WHERE data_processamento < ?", Integer.class, dataUltimoDisparo);
+        Integer escolas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Escolas WHERE data_processamento > ?", Integer.class, dataUltimoDisparo);
 
         return escolas > 0;
     }
 
     public Boolean existemNovasNotas(LocalDateTime dataUltimoDisparo){
-        Integer notas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Ideb WHERE data_processamento < ?", Integer.class, dataUltimoDisparo);
+        Integer notas = getJdbcTemplate().queryForObject("SELECT count(*) FROM TB_Ideb WHERE data_processamento > ?", Integer.class, dataUltimoDisparo);
 
         return notas > 0;
     }
